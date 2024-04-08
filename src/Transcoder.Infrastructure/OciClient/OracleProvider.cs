@@ -1,5 +1,4 @@
-﻿using Oci.Common;
-using Oci.Common.Auth;
+﻿using Oci.Common.Auth;
 using Oci.ObjectstorageService;
 
 namespace Transcoder.Infrastructure.OciClient

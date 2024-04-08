@@ -44,7 +44,6 @@ namespace Transcoder.Application.Mediator.Transcoder
             string[] files = Directory.GetFiles(outputPath);
             string[] pastas = Directory.GetDirectories(outputPath);
 
-
             try
             {
                 foreach (string filePath in files)
@@ -79,7 +78,6 @@ namespace Transcoder.Application.Mediator.Transcoder
 
                             }
                         }
-
                     }
                 }
             }
