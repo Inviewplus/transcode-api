@@ -1,8 +1,8 @@
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 
-ENV NAMESPACENAME_ORACLE={namespace}
-ENV BUCKET_PRODUCTION={bucket}
-ENV BUCKET_PRODUCTION_POS={bucket_pos}
+ENV NAMESPACENAME_ORACLE=namespace
+ENV BUCKET_PRODUCTION=bucket
+ENV BUCKET_PRODUCTION_POS=bucket_pos
 
 WORKDIR /app
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
