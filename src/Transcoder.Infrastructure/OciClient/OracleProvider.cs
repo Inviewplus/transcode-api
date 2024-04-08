@@ -7,7 +7,7 @@ namespace Transcoder.Infrastructure.OciClient
     {
         public ObjectStorageClient ObjectStoreProvider()
         {
-            return new ObjectStorageClient(new ConfigFileAuthenticationDetailsProvider("~/oracle/.oci/config", "DEFAULT"));
+            return new ObjectStorageClient(new ConfigFileAuthenticationDetailsProvider("./oracle/.oci/config", "DEFAULT"));
         }
     }
 }
