@@ -1,4 +1,5 @@
-﻿using Oci.Common.Auth;
+﻿using Oci.Common;
+using Oci.Common.Auth;
 using Oci.ObjectstorageService;
 
 namespace Transcoder.Infrastructure.OciClient
@@ -7,7 +8,12 @@ namespace Transcoder.Infrastructure.OciClient
     {
         public ObjectStorageClient ObjectStoreProvider()
         {
-            return new ObjectStorageClient(new ConfigFileAuthenticationDetailsProvider("oracle/.oci/config", "DEFAULT"));
+            var profileProvider = new ConfigFileAuthenticationDetailsProvider(
+                                           Environment.GetEnvironmentVariable("OCI_AUTH_PATH"), 
+                                           Environment.GetEnvironmentVariable("OCI_AUTH_PROFILE")
+                                           );
+
+            return new ObjectStorageClient(profileProvider);
         }
     }
 }

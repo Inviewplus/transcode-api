@@ -44,41 +44,51 @@ namespace Transcoder.Application.Mediator.Transcoder
             string[] files = Directory.GetFiles(outputPath);
             string[] pastas = Directory.GetDirectories(outputPath);
 
-            foreach (string filePath in files)
+
+            try
             {
-                // Lê o conteúdo do arquivo
-                byte[] fileContent = File.ReadAllBytes(filePath);
-                // Obtém o nome do arquivo do caminho completo
-                string fileName = Path.GetFileName(filePath);
-
-                await _oracleClient.PutFile(request.IdProduct, fileName, new MemoryStream(fileContent));
-            }
-
-
-            foreach (string path in pastas)
-            {
-                if (Directory.Exists(path))
+                foreach (string filePath in files)
                 {
-                    string[] partes = path.Split(Path.DirectorySeparatorChar);
-                    string ultimaPasta = partes[partes.Length - 1] + "/";
+                    // Lê o conteúdo do arquivo
+                    byte[] fileContent = File.ReadAllBytes(filePath);
+                    // Obtém o nome do arquivo do caminho completo
+                    string fileName = Path.GetFileName(filePath);
 
-                    await _oracleClient.PutFile(request.IdProduct, ultimaPasta, null);
+                    await _oracleClient.PutFile(request.IdProduct, fileName, new MemoryStream(fileContent));
+                }
 
-                    string[] arquivos = Directory.GetFiles(path);
-                    if (arquivos.Length > 0)
+
+                foreach (string path in pastas)
+                {
+                    if (Directory.Exists(path))
                     {
-                        foreach (string arquivo in arquivos)
+                        string[] partes = path.Split(Path.DirectorySeparatorChar);
+                        string ultimaPasta = partes[partes.Length - 1] + "/";
+
+                        await _oracleClient.PutFile(request.IdProduct, ultimaPasta, null);
+
+                        string[] arquivos = Directory.GetFiles(path);
+                        if (arquivos.Length > 0)
                         {
-                            byte[] fileContent = File.ReadAllBytes(arquivo);
-                            string fileName = Path.GetFileName(arquivo);
+                            foreach (string arquivo in arquivos)
+                            {
+                                byte[] fileContent = File.ReadAllBytes(arquivo);
+                                string fileName = Path.GetFileName(arquivo);
 
-                            await _oracleClient.PutFile(request.IdProduct, ultimaPasta + fileName, new MemoryStream(fileContent));
+                                await _oracleClient.PutFile(request.IdProduct, ultimaPasta + fileName, new MemoryStream(fileContent));
 
+                            }
                         }
-                    }
 
+                    }
                 }
             }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+            
         }
         private void GetFileToLocal(TranscoderRequest request, GetObjectResponse? response, string inputPath)
         {
@@ -114,8 +124,8 @@ namespace Transcoder.Application.Mediator.Transcoder
 
         static void CreatePath(out string inputPath, out string outputPath)
         {
-            inputPath = Path.GetRelativePath("..", "\\Transcoder\\Transcode.Application\\Mediator\\Transcoder\\Input\\");
-            outputPath = Path.GetRelativePath("..", "\\Transcoder\\Transcode.Application\\Mediator\\Transcoder\\Output\\");
+            inputPath = Path.GetRelativePath("..", "\\transcode-api\\src\\Transcoder.Application\\Mediator\\Transcoder\\Input");
+            outputPath = Path.GetRelativePath("..", "\\transcode-api\\src\\Transcoder.Application\\Mediator\\Transcoder\\Output");
             var novaPasta = Guid.NewGuid().ToString();
 
             if (Path.Exists(inputPath) && Path.Exists(outputPath))
