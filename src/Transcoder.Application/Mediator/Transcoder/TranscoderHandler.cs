@@ -25,7 +25,7 @@ namespace Transcoder.Application.Mediator.Transcoder
                 return null;
 
             string inputPath, outputPath;
-
+        
             CreatePath(out inputPath, out outputPath);
             GetFileToLocal(request, response, inputPath);
             ConvertHLS(inputPath, outputPath);
@@ -90,12 +90,13 @@ namespace Transcoder.Application.Mediator.Transcoder
         }
         private void GetFileToLocal(TranscoderRequest request, GetObjectResponse? response, string inputPath)
         {
-            using (var responseStream = response.InputStream)
+            using (var responseStream = response?.InputStream)
             {
                 using (var fileStream = File.Create(Path.Combine(inputPath, request.FileName)))
                 {
-                    responseStream.CopyTo(fileStream);
+                    responseStream?.CopyTo(fileStream);
                 }
+                Console.WriteLine(Path.Combine(inputPath, request.FileName));
                 _transcoder.ConvertQuality(Path.Combine(inputPath, request.FileName), inputPath);
                 File.Delete(Path.Combine(inputPath, request.FileName));
             }
@@ -103,8 +104,12 @@ namespace Transcoder.Application.Mediator.Transcoder
 
         private void ConvertHLS(string inputPath, string outputPath)
         {
+            Console.WriteLine($"Funcao de conversão");
+            Console.WriteLine($"====================================");
+            Console.WriteLine($"=====================================");
+            Console.WriteLine(inputPath);
             string[] files = Directory.GetFiles(inputPath);
-
+            Console.WriteLine(files.Length);
             var masterPlaylistContent = new StringBuilder();
             masterPlaylistContent.AppendLine("#EXTM3U");
             masterPlaylistContent.AppendLine("#EXT-X-VERSION:3");
@@ -122,22 +127,19 @@ namespace Transcoder.Application.Mediator.Transcoder
 
         static void CreatePath(out string inputPath, out string outputPath)
         {
-            inputPath = Path.GetRelativePath("..", "\\transcode-api\\src\\Transcoder.Application\\Mediator\\Transcoder\\Input");
-            outputPath = Path.GetRelativePath("..", "\\transcode-api\\src\\Transcoder.Application\\Mediator\\Transcoder\\Output");
             var novaPasta = Guid.NewGuid().ToString();
 
-            if (Path.Exists(inputPath) && Path.Exists(outputPath))
-            {
-                Directory.CreateDirectory(Path.Combine(inputPath, novaPasta));
-                inputPath = Path.Join(inputPath, novaPasta);
+            Directory.CreateDirectory($"/transcoder/input/{novaPasta}");
+            inputPath = Path.Join($"/transcoder/input/{novaPasta}");
 
-                Directory.CreateDirectory(Path.Combine(outputPath, novaPasta));
-                outputPath = Path.Join(outputPath, novaPasta);
+            Directory.CreateDirectory($"/transcoder/output/{novaPasta}");
+            outputPath = Path.Join($"/transcoder/output/{novaPasta}");
 
-                Directory.CreateDirectory(Path.Combine(outputPath, "1080p"));
-                Directory.CreateDirectory(Path.Combine(outputPath, "720p"));
-                Directory.CreateDirectory(Path.Combine(outputPath, "480p"));
-            }
+            Directory.CreateDirectory(outputPath + "/1080p");
+            Directory.CreateDirectory(outputPath + "/720p");
+            Directory.CreateDirectory(outputPath + "/480p");
+
+            Console.WriteLine("Pastas Criadas com sucesso");   
         }
 
         static string Resolution(string resolution) => resolution switch
